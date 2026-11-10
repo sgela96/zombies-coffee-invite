@@ -1,0 +1,69 @@
+<!doctype html>
+<!-- The INVITE page (SN-196). Chat apps only make https links tappable, so the game shares
+     https://sgela96.github.io/zombies-coffee-invite/?add=Name%231234 and this page opens the game
+     with zombiescoffee://add/Name%231234 (Online/Invite.cs sends the friend request). It also
+     shows the code to type by hand. Static, no scripts from anywhere else: host it on GitHub
+     Pages from a PUBLIC repo named zombies-coffee-invite (docs/TESTFLIGHT.md, "Invite page"). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zombies &amp; Coffee · Invite</title>
+<meta property="og:title" content="Come raid my café in Zombies &amp; Coffee!">
+<meta property="og:description" content="Tap to add me as a neighbour.">
+<style>
+  :root { --ink:#2A1E1A; --cream:#FBF4E2; --toxic:#8FD14F; --toxic-d:#4E8A1E; --night:#1E2A22; --wine:#7A1F2B; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:radial-gradient(circle at 50% 20%, #2F4A33, var(--night) 70%);
+         font-family:-apple-system, "Segoe UI", Roboto, sans-serif; color:var(--cream);
+         display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  .card { width:100%; max-width:420px; background:var(--cream); color:var(--ink); border:4px solid var(--ink);
+          border-radius:22px; box-shadow:0 7px 0 var(--ink); padding:26px 22px 22px; text-align:center; }
+  h1 { margin:0 0 4px; font-size:26px; letter-spacing:.5px; color:var(--wine); }
+  p { margin:6px 0 16px; font-size:16px; line-height:1.4; }
+  .code { display:inline-block; margin:4px 0 18px; padding:10px 18px; font-size:28px; font-weight:800;
+          background:#fff; border:3px dashed var(--ink); border-radius:12px; word-break:break-all; }
+  .code span { color:#9A7A5A; }
+  .btn { display:block; width:100%; margin:10px 0 0; padding:15px 12px; font-size:19px; font-weight:800;
+         border:4px solid var(--ink); border-radius:16px; box-shadow:0 5px 0 var(--ink); cursor:pointer;
+         text-decoration:none; color:var(--ink); background:var(--toxic); }
+  .btn:active { transform:translateY(4px); box-shadow:0 1px 0 var(--ink); }
+  .btn.alt { background:#E8DCC0; }
+  .small { font-size:13px; color:#6B5A4A; margin-top:16px; }
+</style>
+</head>
+<body>
+<main class="card">
+  <h1>ZOMBIES &amp; COFFEE</h1>
+  <p id="line">A friend wants you as a neighbour.</p>
+  <div class="code" id="code">—</div>
+  <a class="btn" id="open" href="#">OPEN THE GAME</a>
+  <button class="btn alt" id="copy" type="button">COPY CODE</button>
+  <p class="small">No game yet? Install it from your TestFlight invite, open it once, then tap OPEN THE GAME again — or type the code in Neighbours ▸ ADD.</p>
+</main>
+<script>
+  // ?add=Name%231234 (also #Name%231234, in case an app drops the query).
+  var q = new URLSearchParams(location.search).get("add") || decodeURIComponent((location.hash || "").slice(1));
+  var name = (q || "").trim();
+  var codeEl = document.getElementById("code"), open = document.getElementById("open");
+  if (name) {
+    var h = name.lastIndexOf("#");
+    codeEl.textContent = "";
+    codeEl.appendChild(document.createTextNode(h > 0 ? name.slice(0, h) : name));
+    if (h > 0) { var s = document.createElement("span"); s.textContent = name.slice(h); codeEl.appendChild(s); }
+    document.getElementById("line").textContent = (h > 0 ? name.slice(0, h) : name) + " wants you as a neighbour.";
+    var app = "zombiescoffee://add/" + encodeURIComponent(name);
+    open.href = app;
+    // Try straight away; if the game isn't installed nothing happens and the buttons stay.
+    setTimeout(function () { location.href = app; }, 300);
+  } else {
+    open.style.display = "none";
+  }
+  document.getElementById("copy").onclick = function () {
+    var b = this;
+    function done() { b.textContent = "COPIED!"; setTimeout(function () { b.textContent = "COPY CODE"; }, 1600); }
+    if (navigator.clipboard) navigator.clipboard.writeText(name).then(done, done); else done();
+  };
+</script>
+</body>
+</html>
